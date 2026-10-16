@@ -60,6 +60,14 @@ class WeatherRepository {
     final freshData = await WeatherService.fetchWeather(city);
     // 写入本地持久化缓存
     await prefs.setString(cacheKey, json.encode(freshData.toJson()));
+
+    // 同步给 Android 原生桌面小组件
+    await prefs.setString('widget_city', freshData.cityName);
+    await prefs.setString('widget_temp', '${freshData.temperature.round()}°');
+    await prefs.setString('widget_desc', freshData.weatherText);
+    await prefs.setString('widget_sub', '风速 ${freshData.windSpeed.round()}km/h · 湿度 ${freshData.relativeHumidity}%');
+    await prefs.setString('widget_range', '${freshData.tempMin.round()}° / ${freshData.tempMax.round()}°');
+
     return freshData;
   }
 }

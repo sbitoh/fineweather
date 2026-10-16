@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>初晴天气 - 应用图标候选方案</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+    }
+    body {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 36px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      max-width: 680px;
+      width: 100%;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .icon-box {
+      width: 140px;
+      height: 140px;
+      border-radius: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* 方案 A: 晨曦初晴 (通透冰蓝底 + 穿透云层的初升暖阳) */
+    .icon-a {
+      background: linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 45%, #0284c7 100%);
+    }
+
+    /* 方案 B: 现代纯净白 (极简纯粹，柔和微拟态立体云朵太阳) */
+    .icon-b {
+      background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.8);
+    }
+
+    /* 方案 C: 晴空微风 (经典湛蓝 + 抽象渐变风纹与日轮) */
+    .icon-c {
+      background: linear-gradient(145deg, #38bdf8 0%, #2563eb 60%, #1d4ed8 100%);
+    }
+
+    /* 方案 D: 黄金初曦 (晨光破晓橙金微光 + 质感立体剪影) */
+    .icon-d {
+      background: linear-gradient(145deg, #fbbf24 0%, #f97316 55%, #ea580c 100%);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>初晴天气 · 应用图标设计候选</h1>
+  <div class="subtitle">针对手机桌面精细调校的 4 种风格方案，请选择你最喜欢的一款</div>
+
+  <div class="grid">
+    <!-- 方案 A -->
+    <div class="card">
+      <div class="icon-box icon-a">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <!-- 暖金光芒太阳 -->
+          <circle cx="62" cy="38" r="20" fill="url(#sunA)" filter="drop-shadow(0 4px 8px rgba(251,146,60,0.4))"/>
+          <!-- 饱满立体白云 -->
+          <path d="M68,72 H32 A16,16 0 0,1 29,40.3 A22,22 0 0,1 68,36.5 A16,16 0 0,1 68,72 Z" fill="#ffffff" filter="drop-shadow(0 6px 12px rgba(0,0,0,0.15))"/>
+          <path d="M66,70 H34 A14,14 0 0,1 31,42.5 A20,20 0 0,1 66,39 A14,14 0 0,1 66,70 Z" fill="url(#cloudGradA)"/>
+          <defs>
+            <linearGradient id="sunA" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fef08a"/>
+              <stop offset="100%" stop-color="#f97316"/>
+            </linearGradient>
+            <linearGradient id="cloudGradA" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#f0f9ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="card-title">方案 A：晨曦初晴（推荐）</div>
+      <div class="card-desc">冰川浅蓝通透底色，搭配破晓暖阳穿透白云，最契合“雨后初晴”之意</div>
+    </div>
+
+    <!-- 方案 B -->
+    <div class="card">
+      <div class="icon-box icon-b">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="58" cy="40" r="18" fill="url(#sunB)"/>
+          <path d="M66,70 H30 A15,15 0 0,1 27,40.5 A20,20 0 0,1 66,37 A15,15 0 0,1 66,70 Z" fill="url(#cloudB)" filter="drop-shadow(0 6px 14px rgba(56,189,248,0.25))"/>
+          <defs>
+            <linearGradient id="sunB" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fde047"/>
+              <stop offset="100%" stop-color="#fb923c"/>
+            </linearGradient>
+            <linearGradient id="cloudB" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#0284c7"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="card-title">方案 B：极简纯白微拟态</div>
+      <div class="card-desc">陶瓷纯白背景，搭配立体天蓝云朵与暖橙日轮，极为干净素雅</div>
+    </div>
+
+    <!-- 方案 C -->
+    <div class="card">
+      <div class="icon-box icon-c">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <!-- 极光柔和光晕 -->
+          <circle cx="50" cy="50" r="32" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+          <circle cx="50" cy="50" r="22" fill="#ffffff" filter="drop-shadow(0 4px 16px rgba(255,255,255,0.6))"/>
+          <path d="M25,65 Q50,45 75,65" stroke="rgba(255,255,255,0.4)" stroke-width="4" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="card-title">方案 C：纯粹几何光晕</div>
+      <div class="card-desc">经典湛蓝深底，搭配发光光轮与微风线条，极客冷淡高级感</div>
+    </div>
+
+    <!-- 方案 D -->
+    <div class="card">
+      <div class="icon-box icon-d">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <path d="M70,72 H30 A16,16 0 0,1 27,40.3 A22,22 0 0,1 70,36.5 A16,16 0 0,1 70,72 Z" fill="#ffffff" filter="drop-shadow(0 6px 14px rgba(0,0,0,0.18))"/>
+          <!-- 微雨初歇后的水滴 -->
+          <path d="M50,48 C50,48 42,60 42,65 A8,8 0 0,0 58,65 C58,60 50,48 50,48 Z" fill="#38bdf8"/>
+        </svg>
+      </div>
+      <div class="card-title">方案 D：初晴金曦</div>
+      <div class="card-desc">破晓晨曦暖金色系，白色立体云朵包裹纯净水滴，视觉醒目</div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>初晴天气 - 进阶应用图标方案（反庸俗套路）</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+    }
+    body {
+      background: #090d16;
+      color: #ffffff;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 36px;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+      max-width: 680px;
+      width: 100%;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .icon-box {
+      width: 130px;
+      height: 130px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.5);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* 方案 1: 苹果原生质感（大片湛蓝苍穹 + 一缕极简初阳斜光） */
+    .icon-1 {
+      background: linear-gradient(180deg, #1d4ed8 0%, #3b82f6 50%, #60a5fa 100%);
+    }
+
+    /* 方案 2: 纯粹极简度数标（回归“只看天气”初衷，干净无符号） */
+    .icon-2 {
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* 方案 3: 几何天气 Material You（撞色大色块拼接，几何纯粹） */
+    .icon-3 {
+      background: #1e293b;
+    }
+
+    /* 方案 4: 破晓地平线（纯粹一道晨曦地平光，不画云朵太阳） */
+    .icon-4 {
+      background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 60%, #030712 100%);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>初晴天气 · 4 种全新去套路图标设计</h1>
+  <div class="subtitle">彻底抛弃烂大街的卡通云朵贴图，回归高级感与质感</div>
+
+  <div class="grid">
+    <!-- 方案 1 -->
+    <div class="card">
+      <div class="icon-box icon-1">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <!-- 极简苹果质感：金色纯圆太阳 + 纯白单色流线 -->
+          <circle cx="50" cy="46" r="22" fill="#facc15" filter="drop-shadow(0 4px 12px rgba(250,204,21,0.5))"/>
+          <path d="M22,68 C28,52 46,52 52,60 C58,54 74,54 78,68 Z" fill="rgba(255,255,255,0.95)" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.15))"/>
+        </svg>
+      </div>
+      <div class="card-title">方案 1：iOS 纯净写实质感</div>
+      <div class="card-desc">纯粹的苹果天气美学：深湛晴空底，干净利落的单体日轮与纯白剪影，绝不花哨</div>
+    </div>
+
+    <!-- 方案 2 -->
+    <div class="card">
+      <div class="icon-box icon-2">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <!-- 大号极简 °C 符号搭配发光小圆点 -->
+          <text x="36" y="65" font-size="46" font-weight="200" fill="#ffffff" font-family="-apple-system, sans-serif">16</text>
+          <circle cx="72" cy="36" r="6" fill="none" stroke="#38bdf8" stroke-width="3"/>
+          <circle cx="72" cy="36" r="2" fill="#38bdf8"/>
+        </svg>
+      </div>
+      <div class="card-title">方案 2：极简数字温标</div>
+      <div class="card-desc">不画天气元素，用极简纯粹的气温符号代替，极客感拉满，类似 Not Boring 系列</div>
+    </div>
+
+    <!-- 方案 3 -->
+    <div class="card">
+      <div class="icon-box icon-3">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <!-- 纯几何多边形碰撞：半圆金阳 + 冰蓝胶囊 -->
+          <path d="M30,55 A20,20 0 0,1 70,55 Z" fill="#fb923c"/>
+          <rect x="22" y="55" width="56" height="16" rx="8" fill="#38bdf8"/>
+          <circle cx="68" cy="42" r="4" fill="#fef08a"/>
+        </svg>
+      </div>
+      <div class="card-title">方案 3：Material 几何极简</div>
+      <div class="card-desc">类似《几何天气》开源神作风格：纯粹几何几何色块，扁平撞色，清爽不油腻</div>
+    </div>
+
+    <!-- 方案 4 -->
+    <div class="card">
+      <div class="icon-box icon-4">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <!-- 破晓初晴的一道弧形光弧 -->
+          <path d="M15,75 Q50,25 85,75" fill="none" stroke="url(#arcSun)" stroke-width="6" stroke-linecap="round" filter="drop-shadow(0 0 10px rgba(251,146,60,0.8))"/>
+          <circle cx="50" cy="50" r="14" fill="#fbbf24" filter="drop-shadow(0 0 16px rgba(251,191,36,0.9))"/>
+          <defs>
+            <linearGradient id="arcSun" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="50%" stop-color="#fb923c"/>
+              <stop offset="100%" stop-color="#facc15"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="card-title">方案 4：破晓地平线</div>
+      <div class="card-desc">一道初晴光弧破晓而出，抽象意境派，现代高级感，告别一切老套符号</div>
+    </div>
+  </div>
+
+</body>
+</html>

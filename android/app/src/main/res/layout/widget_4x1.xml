@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="太原 · 小雨"
-                android:textColor="#FFFFFF"
+                android:textColor="#1E293B"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="北风 · 湿度 95%"
-                android:textColor="#B0BEC5"
+                android:textColor="#475569"
                 android:textSize="11sp" />
         </LinearLayout>
     </LinearLayout>
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="13°"
-            android:textColor="#FFFFFF"
+            android:textColor="#0F172A"
             android:textSize="32sp"
             android:textStyle="bold" />
 
@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="11° / 15°"
-                android:textColor="#B0BEC5"
+                android:textColor="#475569"
                 android:textSize="11sp" />
 
             <TextView
@@ -85,8 +85,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="空气 优"
-                android:textColor="#64B5F6"
-                android:textSize="10sp" />
+                android:textColor="#0284C7"
+                android:textSize="10sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 

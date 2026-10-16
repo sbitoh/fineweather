@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#FFA000"
+        android:pathData="M24,24m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0" />
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M24,24m-9,0a9,9 0,1 1,18 0a9,9 0,1 1,-18 0" />
+    <!-- 太阳光芒条 -->
+    <path
+        android:strokeColor="#FFA000"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M24,4 L24,8 M24,40 L24,44 M4,24 L8,24 M40,24 L44,24 M9.8,9.8 L12.6,12.6 M35.4,35.4 L38.2,38.2 M9.8,38.2 L12.6,35.4 M35.4,12.6 L38.2,9.8" />
+</vector>

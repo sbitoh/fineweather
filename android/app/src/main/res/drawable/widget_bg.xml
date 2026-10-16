@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#CC1E293B" />
+    <!-- 暖调冰川蓝 / 灰蓝柔和渐变，通透清爽，杜绝死黑 -->
+    <gradient
+        android:angle="135"
+        android:startColor="#E6D6E6F2"
+        android:endColor="#E6C8DCF0" />
     <corners android:radius="24dp" />
-    <stroke android:width="1dp" android:color="#33FFFFFF" />
+    <stroke android:width="1.5dp" android:color="#99FFFFFF" />
 </shape>
