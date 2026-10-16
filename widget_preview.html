@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>初晴天气 - 桌面微组件全尺寸设计预览</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    body {
+      background: #0b0f19;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+    /* 桌面模拟容器 */
+    .home-screen {
+      width: 412px;
+      height: 892px;
+      border-radius: 48px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.85), 0 0 0 12px #262c38;
+      /* 充满质感的写实壁纸 */
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1c2833 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 20px 24px;
+    }
+
+    /* 顶部状态栏 */
+    .status-bar {
+      height: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0 6px;
+      opacity: 0.9;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin: 14px 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 通用小组件毛玻璃基座 */
+    .widget-base {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(28px) saturate(160%);
+      -webkit-backdrop-filter: blur(28px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 28px;
+      box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ----------------------------------
+       1. 4x2 旗舰全能看板小组件
+    ---------------------------------- */
+    .widget-4x2 {
+      height: 175px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .w42-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .w42-city-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .w42-city {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .w42-date {
+      font-size: 12px;
+      color: rgba(255,255,255,0.65);
+      margin-top: 2px;
+    }
+    .w42-temp-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .w42-temp {
+      font-size: 48px;
+      font-weight: 200;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+    .w42-condition {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .w42-desc {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .w42-range {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+
+    /* 逐小时小胶囊 */
+    .w42-bottom {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .w42-hour-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .w42-h-time {
+      font-size: 11px;
+      color: rgba(255,255,255,0.6);
+    }
+    .w42-h-icon {
+      font-size: 16px;
+    }
+    .w42-h-temp {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* ----------------------------------
+       2. 4x1 经典横条小组件
+    ---------------------------------- */
+    .widget-4x1 {
+      height: 82px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .w41-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .w41-icon {
+      font-size: 34px;
+    }
+    .w41-text-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .w41-city {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .w41-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 2px;
+    }
+    .w41-right {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .w41-temp {
+      font-size: 38px;
+      font-weight: 300;
+      letter-spacing: -1px;
+    }
+    .w41-details {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      text-align: right;
+    }
+
+    /* ----------------------------------
+       3. 2x2 方块组合排布
+    ---------------------------------- */
+    .row-2x2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .widget-2x2 {
+      height: 165px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .w22-city {
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .w22-icon-large {
+      font-size: 42px;
+      margin: 2px 0;
+    }
+    .w22-temp {
+      font-size: 42px;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+    .w22-foot {
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    /* 模拟手机底部 Dock */
+    .dock-bar {
+      margin-top: auto;
+      height: 76px;
+      border-radius: 36px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 16px;
+    }
+    .dock-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="home-screen">
+    <!-- 状态栏 -->
+    <div class="status-bar">
+      <span>09:41</span>
+      <div style="display:flex;gap:6px;">
+        <span>5G</span>
+        <span>100%</span>
+      </div>
+    </div>
+
+    <!-- 1. 4x2 尺寸展示 -->
+    <div class="section-label">📌 4x2 尺寸 · 旗舰全能看板</div>
+    <div class="widget-base widget-4x2">
+      <div class="w42-top">
+        <div>
+          <div class="w42-city-row">
+            <span>📍</span>
+            <span class="w42-city">太原</span>
+          </div>
+          <div class="w42-date">10月17日 · 周六</div>
+        </div>
+        <div class="w42-condition">
+          <div class="w42-temp-wrap">
+            <span class="w42-temp">13°</span>
+            <span class="w42-desc">🌧️ 小雨</span>
+          </div>
+          <div class="w42-range">最高 15° · 最低 11° · 湿度 95%</div>
+        </div>
+      </div>
+      <!-- 逐小时胶囊 -->
+      <div class="w42-bottom">
+        <div class="w42-hour-item">
+          <span class="w42-h-time">现在</span>
+          <span class="w42-h-icon">🌧️</span>
+          <span class="w42-h-temp">13°</span>
+        </div>
+        <div class="w42-hour-item">
+          <span class="w42-h-time">10:00</span>
+          <span class="w42-h-icon">🌦️</span>
+          <span class="w42-h-temp">13°</span>
+        </div>
+        <div class="w42-hour-item">
+          <span class="w42-h-time">11:00</span>
+          <span class="w42-h-icon">⛅</span>
+          <span class="w42-h-temp">14°</span>
+        </div>
+        <div class="w42-hour-item">
+          <span class="w42-h-time">12:00</span>
+          <span class="w42-h-icon">🌤️</span>
+          <span class="w42-h-temp">15°</span>
+        </div>
+        <div class="w42-hour-item">
+          <span class="w42-h-time">13:00</span>
+          <span class="w42-h-icon">☀️</span>
+          <span class="w42-h-temp">15°</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 4x1 尺寸展示 -->
+    <div class="section-label">📌 4x1 尺寸 · 极简胶囊条</div>
+    <div class="widget-base widget-4x1">
+      <div class="w41-left">
+        <span class="w41-icon">🌦️</span>
+        <div class="w41-text-group">
+          <span class="w41-city">太原 · 小雨</span>
+          <span class="w41-sub">北风 2级 · 湿度 95%</span>
+        </div>
+      </div>
+      <div class="w41-right">
+        <span class="w41-temp">13°</span>
+        <div class="w41-details">
+          <div>11° / 15°</div>
+          <div style="color:#60a5fa;font-size:10px;">空气 优 28</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 2x2 尺寸展示 -->
+    <div class="section-label">📌 2x2 尺寸 · 经典正方小卡</div>
+    <div class="row-2x2">
+      <div class="widget-base widget-2x2">
+        <div class="w22-city"><span>📍</span>太原</div>
+        <div class="w22-icon-large">🌦️</div>
+        <div>
+          <div class="w22-temp">13°</div>
+          <div class="w22-foot">
+            <span>小雨转阴</span>
+            <span style="font-size:11px;opacity:0.7">11° / 15°</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 模拟对比：另一个城市或系统图标 -->
+      <div class="widget-base widget-2x2" style="background: rgba(255,255,255,0.08);">
+        <div class="w22-city"><span>📍</span>北京</div>
+        <div class="w22-icon-large">☀️</div>
+        <div>
+          <div class="w22-temp">18°</div>
+          <div class="w22-foot">
+            <span>晴空万里</span>
+            <span style="font-size:11px;opacity:0.7">8° / 19°</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 桌面底栏 Dock -->
+    <div class="dock-bar">
+      <div class="dock-icon" style="background:#22c55e;">📞</div>
+      <div class="dock-icon" style="background:#0ea5e9;">💬</div>
+      <div class="dock-icon" style="background:#f97316;">🌐</div>
+      <div class="dock-icon" style="background:linear-gradient(135deg, #38bdf8, #1e40af);">🌤️</div>
+    </div>
+  </div>
+
+</body>
+</html>

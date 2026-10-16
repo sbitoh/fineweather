@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>初晴天气 - 视觉设计原型</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    body {
+      background: #0f141c;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    /* 手机外壳容器 */
+    .phone-container {
+      width: 412px;
+      height: 892px;
+      border-radius: 48px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 0 12px #262c38, 0 0 0 14px #1b202a;
+      background: linear-gradient(180deg, #1d3557 0%, #182848 35%, #0f172a 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+    /* 顶部状态栏 */
+    .status-bar {
+      height: 44px;
+      padding: 12px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      z-index: 10;
+    }
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    /* 顶部导航与城市 */
+    .header-nav {
+      padding: 10px 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .city-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .city-name {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .loc-icon {
+      font-size: 16px;
+      color: #60a5fa;
+    }
+    .sub-area {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    /* 可滑动主内容区 */
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 20px 30px;
+      scrollbar-width: none;
+    }
+    .scroll-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* 核心实时温度区 */
+    .hero-section {
+      text-align: center;
+      padding: 18px 0 24px;
+    }
+    .temp-large {
+      font-size: 96px;
+      font-weight: 200;
+      line-height: 1;
+      letter-spacing: -4px;
+      margin-left: 14px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .weather-desc-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 500;
+    }
+    .weather-pill {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #93c5fd;
+      font-weight: 500;
+    }
+    .temp-range {
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    /* 通用毛玻璃卡片 */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    }
+    .card-title {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* 逐小时横向滑动 */
+    .hourly-row {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .hourly-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-width: 44px;
+    }
+    .hourly-time {
+      font-size: 12px;
+      color: rgba(255,255,255,0.65);
+    }
+    .hourly-icon {
+      font-size: 20px;
+    }
+    .hourly-temp {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* 7天预报列表 */
+    .daily-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .daily-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .daily-date {
+      width: 80px;
+    }
+    .daily-icon-desc {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 90px;
+      color: rgba(255,255,255,0.85);
+    }
+    .temp-bar-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 10px;
+    }
+    .t-min {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      width: 24px;
+      text-align: right;
+    }
+    .t-max {
+      font-size: 13px;
+      font-weight: 600;
+      width: 24px;
+    }
+    .bar-bg {
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+      position: relative;
+    }
+    .bar-fill {
+      position: absolute;
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #60a5fa, #f59e0b);
+    }
+
+    /* 2x2 Bento 详情网格 */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .bento-item {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 22px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 105px;
+    }
+    .bento-header {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .bento-value {
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+    .bento-sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 2px;
+    }
+
+    /* 底部极客信息 */
+    .footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      padding: 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tag-pure {
+      display: inline-block;
+      margin: 0 auto;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      font-size: 10px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- 顶部状态栏 -->
+    <div class="status-bar">
+      <span>09:41</span>
+      <div class="status-icons">
+        <span>5G</span>
+        <span>100%</span>
+      </div>
+    </div>
+
+    <!-- 顶部城市导航 -->
+    <div class="header-nav">
+      <div>
+        <div class="city-badge">
+          <span class="loc-icon">📍</span>
+          <span class="city-name">太原</span>
+        </div>
+        <div class="sub-area">山西省 · 小店区</div>
+      </div>
+      <div class="btn-icon">⚙️</div>
+    </div>
+
+    <!-- 主滑动区 -->
+    <div class="scroll-content">
+      <!-- 英雄大温标 -->
+      <div class="hero-section">
+        <div class="temp-large">13°</div>
+        <div class="weather-desc-row">
+          <span>🌦️ 小雨</span>
+          <span class="weather-pill">空气 优 28</span>
+        </div>
+        <div class="temp-range">最高 15° · 最低 11° · 体感 12°</div>
+      </div>
+
+      <!-- 24小时逐小时预报卡片 -->
+      <div class="glass-card">
+        <div class="card-title">⏱️ 逐小时预报 · 未来24小时</div>
+        <div class="hourly-row">
+          <div class="hourly-item">
+            <span class="hourly-time">现在</span>
+            <span class="hourly-icon">🌧️</span>
+            <span class="hourly-temp">13°</span>
+          </div>
+          <div class="hourly-item">
+            <span class="hourly-time">10:00</span>
+            <span class="hourly-icon">🌦️</span>
+            <span class="hourly-temp">13°</span>
+          </div>
+          <div class="hourly-item">
+            <span class="hourly-time">11:00</span>
+            <span class="hourly-icon">⛅</span>
+            <span class="hourly-temp">14°</span>
+          </div>
+          <div class="hourly-item">
+            <span class="hourly-time">12:00</span>
+            <span class="hourly-icon">🌤️</span>
+            <span class="hourly-temp">15°</span>
+          </div>
+          <div class="hourly-item">
+            <span class="hourly-time">13:00</span>
+            <span class="hourly-icon">☀️</span>
+            <span class="hourly-temp">15°</span>
+          </div>
+          <div class="hourly-item">
+            <span class="hourly-time">14:00</span>
+            <span class="hourly-icon">☀️</span>
+            <span class="hourly-temp">14°</span>
+          </div>
+          <div class="hourly-item">
+            <span class="hourly-time">15:00</span>
+            <span class="hourly-icon">⛅</span>
+            <span class="hourly-temp">13°</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 未来7天预报卡片 -->
+      <div class="glass-card">
+        <div class="card-title">📅 7 天天气预报</div>
+        <div class="daily-list">
+          <div class="daily-item">
+            <span class="daily-date">今天 10/17</span>
+            <div class="daily-icon-desc"><span>🌧️</span> <span>小雨</span></div>
+            <div class="temp-bar-container">
+              <span class="t-min">11°</span>
+              <div class="bar-bg"><div class="bar-fill" style="left: 10%; width: 45%;"></div></div>
+              <span class="t-max">15°</span>
+            </div>
+          </div>
+          <div class="daily-item">
+            <span class="daily-date">明天 10/18</span>
+            <div class="daily-icon-desc"><span>⛅</span> <span>多云</span></div>
+            <div class="temp-bar-container">
+              <span class="t-min">9°</span>
+              <div class="bar-bg"><div class="bar-fill" style="left: 0%; width: 55%;"></div></div>
+              <span class="t-max">16°</span>
+            </div>
+          </div>
+          <div class="daily-item">
+            <span class="daily-date">周日 10/19</span>
+            <div class="daily-icon-desc"><span>☀️</span> <span>晴朗</span></div>
+            <div class="temp-bar-container">
+              <span class="t-min">8°</span>
+              <div class="bar-bg"><div class="bar-fill" style="left: 0%; width: 70%;"></div></div>
+              <span class="t-max">18°</span>
+            </div>
+          </div>
+          <div class="daily-item">
+            <span class="daily-date">周一 10/20</span>
+            <div class="daily-icon-desc"><span>🌤️</span> <span>晴间多云</span></div>
+            <div class="temp-bar-container">
+              <span class="t-min">10°</span>
+              <div class="bar-bg"><div class="bar-fill" style="left: 15%; width: 65%;"></div></div>
+              <span class="t-max">17°</span>
+            </div>
+          </div>
+          <div class="daily-item">
+            <span class="daily-date">周二 10/21</span>
+            <div class="daily-icon-desc"><span>☁️</span> <span>阴天</span></div>
+            <div class="temp-bar-container">
+              <span class="t-min">7°</span>
+              <div class="bar-bg"><div class="bar-fill" style="left: 0%; width: 50%;"></div></div>
+              <span class="t-max">14°</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento 网格指标 -->
+      <div class="bento-grid">
+        <div class="bento-item">
+          <div class="bento-header">💧 相对湿度</div>
+          <div class="bento-value">95%</div>
+          <div class="bento-sub">当前潮湿微凉</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-header">💨 东北风</div>
+          <div class="bento-value">4.8 <span style="font-size:14px;font-weight:400">km/h</span></div>
+          <div class="bento-sub">2级 · 微风拂面</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-header">☀️ 紫外线指数</div>
+          <div class="bento-value">1 <span style="font-size:14px;font-weight:400">最弱</span></div>
+          <div class="bento-sub">无需额外防护</div>
+        </div>
+        <div class="bento-item">
+          <div class="bento-header">👁️ 能见度</div>
+          <div class="bento-value">10 <span style="font-size:14px;font-weight:400">km</span></div>
+          <div class="bento-sub">视野清晰正常</div>
+        </div>
+      </div>
+
+      <!-- 底部纯净声明与极客信息 -->
+      <div class="footer-note">
+        <span class="tag-pure">🛡️ 纯净模式 · 零广告 · 零资讯推送</span>
+        <span>数据源: Open-Meteo · 本地已缓存 12 分钟</span>
+        <span>初晴天气 FineWeather v1.0.0</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
