@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/weather_data.dart';
 import '../services/weather_service.dart';
+import '../services/i18n.dart';
 
 class CitySearchDelegate extends SearchDelegate<CityItem?> {
   @override
-  String get searchFieldLabel => '搜索城市（如：太原、北京、上海）';
+  String get searchFieldLabel => I18n.searchCityHint;
 
   @override
   ThemeData appBarTheme(BuildContext context) {
     return ThemeData.dark().copyWith(
-      scaffoldBackgroundColor: const Color(0xFF0F172A),
+      scaffoldBackgroundColor: const Color(0xFF1E293B),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF1E293B),
+        backgroundColor: Color(0xFF334155),
         elevation: 0,
       ),
       inputDecorationTheme: const InputDecorationTheme(
@@ -49,11 +50,11 @@ class CitySearchDelegate extends SearchDelegate<CityItem?> {
   Widget buildSuggestions(BuildContext context) {
     if (query.trim().isEmpty) {
       return Container(
-        color: const Color(0xFF0F172A),
-        child: const Center(
+        color: const Color(0xFF1E293B),
+        child: Center(
           child: Text(
-            '输入城市中文名称或拼音进行搜索',
-            style: TextStyle(color: Colors.white38, fontSize: 14),
+            I18n.searchGuide,
+            style: const TextStyle(color: Colors.white38, fontSize: 14),
           ),
         ),
       );
@@ -67,7 +68,7 @@ class CitySearchDelegate extends SearchDelegate<CityItem?> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
-            color: const Color(0xFF0F172A),
+            color: const Color(0xFF1E293B),
             child: const Center(
               child: CircularProgressIndicator(color: Colors.lightBlueAccent),
             ),
@@ -77,18 +78,18 @@ class CitySearchDelegate extends SearchDelegate<CityItem?> {
         final list = snapshot.data ?? [];
         if (list.isEmpty) {
           return Container(
-            color: const Color(0xFF0F172A),
-            child: const Center(
+            color: const Color(0xFF1E293B),
+            child: Center(
               child: Text(
-                '未找到匹配的城市，请检查名称',
-                style: TextStyle(color: Colors.white38, fontSize: 14),
+                I18n.noCityFound,
+                style: const TextStyle(color: Colors.white38, fontSize: 14),
               ),
             ),
           );
         }
 
         return Container(
-          color: const Color(0xFF0F172A),
+          color: const Color(0xFF1E293B),
           child: ListView.separated(
             itemCount: list.length,
             separatorBuilder: (context, index) =>

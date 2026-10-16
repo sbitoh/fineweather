@@ -1,57 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_4x1_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_bg"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
     android:padding="14dp">
 
-    <LinearLayout
-        android:id="@+id/layout_left"
+    <TextView
+        android:id="@+id/widget_4x1_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:text="🌦️"
+        android:textSize="26sp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/widget_4x1_icon"
+            android:id="@+id/widget_4x1_city"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🌦️"
-            android:textSize="28sp" />
+            android:text="太原 · 小雨"
+            android:textColor="#1E293B"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/widget_4x1_sub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/widget_4x1_city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="太原 · 小雨"
-                android:textColor="#1E293B"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/widget_4x1_sub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="北风 · 湿度 95%"
-                android:textColor="#475569"
-                android:textSize="11sp" />
-        </LinearLayout>
+            android:layout_marginTop="2dp"
+            android:text="北风 · 湿度 95%"
+            android:textColor="#475569"
+            android:textSize="11sp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:gravity="end"
         android:orientation="horizontal">
 
@@ -91,4 +83,4 @@
         </LinearLayout>
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

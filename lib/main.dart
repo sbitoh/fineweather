@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'models/weather_data.dart';
 import 'services/weather_repository.dart';
+import 'services/location_service.dart';
+import 'services/i18n.dart';
 import 'views/city_manager_sheet.dart';
 import 'widgets/glass_card.dart';
 import 'widgets/weather_visual.dart';
@@ -15,26 +18,55 @@ void main() {
   runApp(const FineWeatherApp());
 }
 
-class FineWeatherApp extends StatelessWidget {
+class FineWeatherApp extends StatefulWidget {
   const FineWeatherApp({super.key});
+
+  @override
+  State<FineWeatherApp> createState() => _FineWeatherAppState();
+}
+
+class _FineWeatherAppState extends State<FineWeatherApp> {
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLang = prefs.getString('app_lang') ?? 'zh';
+    setState(() {
+      I18n.lang = savedLang;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '初晴天气',
+      title: I18n.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0F172A),
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFE2E8F0),
         fontFamily: 'sans-serif',
       ),
-      home: const WeatherHomeScreen(),
+      home: WeatherHomeScreen(
+        onLanguageChanged: (newLang) async {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('app_lang', newLang);
+          setState(() {
+            I18n.lang = newLang;
+          });
+        },
+      ),
     );
   }
 }
 
 class WeatherHomeScreen extends StatefulWidget {
-  const WeatherHomeScreen({super.key});
+  final Function(String) onLanguageChanged;
+
+  const WeatherHomeScreen({super.key, required this.onLanguageChanged});
 
   @override
   State<WeatherHomeScreen> createState() => _WeatherHomeScreenState();
@@ -50,10 +82,10 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadInitialData();
+    _initDataAndLocation();
   }
 
-  Future<void> _loadInitialData() async {
+  Future<void> _initDataAndLocation() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -61,21 +93,37 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
 
     try {
       final cities = await WeatherRepository.getSavedCities();
-      setState(() {
-        _cities = cities;
-        if (_currentCityIndex >= cities.length) {
-          _currentCityIndex = 0;
-        }
-      });
+      _cities = cities;
+
+      // 启动自动定位当前城市（静默异步，有定位则优先插入到首位并展示）
+      _tryAutoLocation();
 
       if (_cities.isNotEmpty) {
         await _fetchWeatherForCurrentCity();
       }
     } catch (e) {
       setState(() {
-        _errorMessage = '加载城市失败: $e';
+        _errorMessage = '${I18n.locateFailed}: $e';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _tryAutoLocation() async {
+    final locCity = await LocationService.getCurrentCity();
+    if (locCity != null && mounted) {
+      setState(() {
+        // 将定位城市更新或置于首位
+        final index = _cities.indexWhere((c) => c.adminArea.contains('定位') || c.name == locCity.name);
+        if (index >= 0) {
+          _cities[index] = locCity;
+        } else {
+          _cities.insert(0, locCity);
+        }
+        _currentCityIndex = 0;
+      });
+      await WeatherRepository.saveCities(_cities);
+      _fetchWeatherForCurrentCity();
     }
   }
 
@@ -97,7 +145,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = '天气获取失败，请下拉重试\n$e';
+        _errorMessage = '${I18n.locateFailed}\n$e';
         _isLoading = false;
       });
     }
@@ -127,6 +175,68 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
     );
   }
 
+  void _openSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(I18n.settings, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(I18n.language, style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                ChoiceChip(
+                  label: const Text('简体中文'),
+                  selected: I18n.lang == 'zh',
+                  onSelected: (val) {
+                    if (val) {
+                      widget.onLanguageChanged('zh');
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+                const SizedBox(width: 12),
+                ChoiceChip(
+                  label: const Text('English'),
+                  selected: I18n.lang == 'en',
+                  onSelected: (val) {
+                    if (val) {
+                      widget.onLanguageChanged('en');
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ],
+            ),
+            const Divider(color: Colors.white12, height: 32),
+            Text(I18n.about, style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 10),
+            Text(
+              I18n.aboutDesc,
+              style: const TextStyle(color: Colors.white60, fontSize: 12, height: 1.5),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'FineWeather v1.1.0\nAuthor: Junye (sbitoh)\nLicense: Apache-2.0',
+              style: TextStyle(color: Colors.white30, fontSize: 11),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('关闭', style: TextStyle(color: Colors.lightBlueAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final wCode = _weatherData?.weatherCode ?? 2;
@@ -145,7 +255,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                 child: _isLoading
                     ? const Center(
                         child: CircularProgressIndicator(
-                          color: Colors.lightBlueAccent,
+                          color: Colors.white,
                         ),
                       )
                     : _errorMessage != null
@@ -156,19 +266,19 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Icon(Icons.cloud_off,
-                                      size: 54, color: Colors.white38),
+                                      size: 54, color: Colors.white54),
                                   const SizedBox(height: 16),
                                   Text(
                                     _errorMessage!,
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
-                                        color: Colors.white70, fontSize: 14),
+                                        color: Colors.white, fontSize: 14),
                                   ),
                                   const SizedBox(height: 16),
                                   ElevatedButton(
                                     onPressed: () =>
                                         _fetchWeatherForCurrentCity(forceRefresh: true),
-                                    child: const Text('点击重试'),
+                                    child: Text(I18n.retry),
                                   )
                                 ],
                               ),
@@ -205,7 +315,8 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
   Widget _buildTopNav() {
     final cityName = _cities.isNotEmpty
         ? _cities[_currentCityIndex].name
-        : '正在加载...';
+        : I18n.locating;
+    final isLoc = _cities.isNotEmpty && _cities[_currentCityIndex].adminArea.contains('定位');
     final adminArea = _cities.isNotEmpty
         ? _cities[_currentCityIndex].adminArea
         : '';
@@ -223,8 +334,8 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.location_on,
-                        color: Colors.lightBlueAccent, size: 20),
+                    Icon(isLoc ? Icons.my_location : Icons.location_on,
+                        color: Colors.white, size: 20),
                     const SizedBox(width: 4),
                     Text(
                       cityName,
@@ -244,17 +355,26 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                     child: Text(
                       adminArea,
                       style: const TextStyle(
-                          color: Colors.white60, fontSize: 12),
+                          color: Colors.white70, fontSize: 12),
                     ),
                   ),
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.format_list_bulleted,
-                color: Colors.white, size: 26),
-            onPressed: _openCityManager,
-          ),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.settings_outlined,
+                    color: Colors.white, size: 24),
+                onPressed: _openSettingsDialog,
+              ),
+              IconButton(
+                icon: const Icon(Icons.format_list_bulleted,
+                    color: Colors.white, size: 24),
+                onPressed: _openCityManager,
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -312,13 +432,13 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.18),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
-                  '空气 优',
-                  style: TextStyle(
-                    color: Colors.lightBlueAccent,
+                child: Text(
+                  I18n.airQuality,
+                  style: const TextStyle(
+                    color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -328,8 +448,8 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            '最高 ${data.tempMax.round()}° · 最低 ${data.tempMin.round()}° · 体感 ${data.apparentTemperature.round()}°',
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+            '${I18n.high} ${data.tempMax.round()}° · ${I18n.low} ${data.tempMin.round()}° · ${I18n.feelsLike} ${data.apparentTemperature.round()}°',
+            style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
         ],
       ),
@@ -343,16 +463,16 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.access_time, size: 16, color: Colors.white60),
-              SizedBox(width: 6),
+              const Icon(Icons.access_time, size: 16, color: Colors.white),
+              const SizedBox(width: 6),
               Text(
-                '逐小时预报 · 24小时',
-                style: TextStyle(
+                I18n.hourlyForecast,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white70,
+                  color: Colors.white,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -376,7 +496,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                     Text(
                       item.time,
                       style: const TextStyle(
-                          color: Colors.white60, fontSize: 12),
+                          color: Colors.white70, fontSize: 12),
                     ),
                     Text(
                       icon,
@@ -407,16 +527,16 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.calendar_today, size: 15, color: Colors.white60),
-              SizedBox(width: 6),
+              const Icon(Icons.calendar_today, size: 15, color: Colors.white),
+              const SizedBox(width: 6),
               Text(
-                '7 天天气预报',
-                style: TextStyle(
+                I18n.dailyForecast,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white70,
+                  color: Colors.white,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -428,7 +548,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: daily.length,
             separatorBuilder: (context, index) =>
-                const Divider(color: Colors.white10, height: 16),
+                const Divider(color: Colors.white12, height: 16),
             itemBuilder: (context, index) {
               final d = daily[index];
               final icon = WeatherVisual.getIconEmoji(d.weatherCode);
@@ -453,7 +573,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                             d.weatherText,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                                color: Colors.white70, fontSize: 13),
+                                color: Colors.white, fontSize: 13),
                           ),
                         ),
                       ],
@@ -465,7 +585,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                         Text(
                           '${d.tempMin.round()}°',
                           style: const TextStyle(
-                              color: Colors.white38, fontSize: 13),
+                              color: Colors.white70, fontSize: 13),
                         ),
                         Expanded(
                           child: Container(
@@ -475,8 +595,8 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                               borderRadius: BorderRadius.circular(2),
                               gradient: const LinearGradient(
                                 colors: [
-                                  Colors.lightBlueAccent,
-                                  Colors.orangeAccent
+                                  Colors.white,
+                                  Colors.amberAccent
                                 ],
                               ),
                             ),
@@ -513,11 +633,10 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
       crossAxisSpacing: 12,
       childAspectRatio: 1.5,
       children: [
-        _buildBentoItem('💧 相对湿度', '${data.relativeHumidity}%', '体感舒适微凉'),
-        _buildBentoItem(
-            '💨 风速风向', '${data.windSpeed.round()} km/h', '微风拂面'),
-        _buildBentoItem('☀️ 紫外线指数', '1 最弱', '无需特别防护'),
-        _buildBentoItem('👁️ 能见度', '10 km', '视线开阔清晰'),
+        _buildBentoItem('💧 ${I18n.humidity}', '${data.relativeHumidity}%', '体感舒适'),
+        _buildBentoItem('💨 ${I18n.wind}', '${data.windSpeed.round()} km/h', '微风拂面'),
+        _buildBentoItem('☀️ ${I18n.uvIndex}', '1', '无需特别防护'),
+        _buildBentoItem('👁️ ${I18n.visibility}', '10 km', '视线开阔清晰'),
       ],
     );
   }
@@ -526,9 +645,9 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white.withOpacity(0.12),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
+        border: Border.all(color: Colors.white.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -536,7 +655,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
         children: [
           Text(title,
               style:
-                  const TextStyle(color: Colors.white60, fontSize: 12)),
+                  const TextStyle(color: Colors.white70, fontSize: 12)),
           Text(val,
               style: const TextStyle(
                 color: Colors.white,
@@ -545,15 +664,13 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
               )),
           Text(sub,
               style:
-                  const TextStyle(color: Colors.white38, fontSize: 11)),
+                  const TextStyle(color: Colors.white60, fontSize: 11)),
         ],
       ),
     );
   }
 
   Widget _buildFooter() {
-    final source = _weatherData?.source ?? 'Open-Meteo';
-
     return Padding(
       padding: const EdgeInsets.only(top: 24, bottom: 10),
       child: Column(
@@ -561,13 +678,13 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.greenAccent.withOpacity(0.12),
+              color: Colors.white.withOpacity(0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Text(
-              '🛡️ 纯净模式 · 零广告 · 零资讯跟踪',
-              style: TextStyle(
-                color: Colors.greenAccent,
+            child: Text(
+              I18n.pureMode,
+              style: const TextStyle(
+                color: Colors.white,
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
@@ -575,8 +692,8 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            '数据源: $source · 自动双源冗余保障',
-            style: const TextStyle(color: Colors.white30, fontSize: 11),
+            I18n.dataSource,
+            style: const TextStyle(color: Colors.white54, fontSize: 11),
           ),
         ],
       ),

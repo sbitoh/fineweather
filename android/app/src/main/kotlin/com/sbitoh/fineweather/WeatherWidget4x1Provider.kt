@@ -26,18 +26,17 @@ class WeatherWidget4x1Provider : AppWidgetProvider() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            val views = RemoteViews(context.packageName, R.layout.widget_4x1).apply {
-                setTextViewText(R.id.widget_4x1_city, "$city · $desc")
-                setTextViewText(R.id.widget_4x1_sub, sub)
-                setTextViewText(R.id.widget_4x1_temp, temp)
-                setTextViewText(R.id.widget_4x1_range, range)
-                setTextViewText(R.id.widget_4x1_icon, icon)
-                setOnClickPendingIntent(R.id.widget_4x1_root, pendingIntent)
-            }
-
             try {
+                val views = RemoteViews(context.packageName, R.layout.widget_4x1)
+                views.setTextViewText(R.id.widget_4x1_city, "$city · $desc")
+                views.setTextViewText(R.id.widget_4x1_sub, sub)
+                views.setTextViewText(R.id.widget_4x1_temp, temp)
+                views.setTextViewText(R.id.widget_4x1_range, range)
+                views.setTextViewText(R.id.widget_4x1_icon, icon)
+                views.setOnClickPendingIntent(R.id.widget_4x1_root, pendingIntent)
+
                 appWidgetManager.updateAppWidget(appWidgetId, views)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 e.printStackTrace()
             }
         }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/weather_data.dart';
 import '../services/weather_repository.dart';
+import '../services/i18n.dart';
 import 'city_search_delegate.dart';
 
 class CityManagerSheet extends StatefulWidget {
@@ -56,7 +57,7 @@ class _CityManagerSheetState extends State<CityManagerSheet> {
   void _removeCity(int index) async {
     if (_cities.length <= 1) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('至少保留一个常用城市')),
+        SnackBar(content: Text(I18n.keepOneCity)),
       );
       return;
     }
@@ -91,9 +92,9 @@ class _CityManagerSheetState extends State<CityManagerSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                '城市管理',
-                style: TextStyle(
+              Text(
+                I18n.cityManager,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -114,6 +115,7 @@ class _CityManagerSheetState extends State<CityManagerSheet> {
             itemBuilder: (context, index) {
               final c = _cities[index];
               final isCurrent = index == widget.selectedIndex;
+              final isLoc = index == 0 && c.adminArea.contains('定位');
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
@@ -129,16 +131,34 @@ class _CityManagerSheetState extends State<CityManagerSheet> {
                 ),
                 child: ListTile(
                   leading: Icon(
-                    Icons.location_on,
+                    isLoc ? Icons.my_location : Icons.location_on,
                     color: isCurrent ? Colors.lightBlueAccent : Colors.white54,
                   ),
-                  title: Text(
-                    c.name,
-                    style: TextStyle(
-                      color: isCurrent ? Colors.lightBlueAccent : Colors.white,
-                      fontWeight:
-                          isCurrent ? FontWeight.bold : FontWeight.normal,
-                    ),
+                  title: Row(
+                    children: [
+                      Text(
+                        c.name,
+                        style: TextStyle(
+                          color: isCurrent ? Colors.lightBlueAccent : Colors.white,
+                          fontWeight:
+                              isCurrent ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                      if (isLoc) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.lightBlueAccent.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            I18n.currentLoc,
+                            style: const TextStyle(fontSize: 10, color: Colors.lightBlueAccent),
+                          ),
+                        ),
+                      ]
+                    ],
                   ),
                   subtitle: Text(
                     c.adminArea,
