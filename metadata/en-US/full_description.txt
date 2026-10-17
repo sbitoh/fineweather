@@ -1,0 +1,9 @@
+FineWeather is an open-source, ultra-clean, and lightweight modern weather app with fully transparent home widgets for Android, built with Flutter.
+
+Key Highlights:
+- 100% Pure & Distraction-Free: Zero ads, zero splash screens, zero commercial newsfeeds, and zero tracking SDKs.
+- Dual Meteorological Sources: Direct connection to Open-Meteo and wttr.in with automatic silent failover. No API keys or middleman proxies needed.
+- Transparent Home Screen Widgets: Includes 4x1 ribbon, 4x2 dashboard, and 4x2 clean minimalist widgets. High contrast white text with drop shadows across any wallpaper.
+- Glacial Glassmorphism Aesthetics: Cool-blue Morandi palette with frosted glass cards.
+- Seamless Bilingual Support: One-tap toggle between English and Simplified Chinese.
+- Localized Smart Geocoding: GPS location with reverse geocoding to resolve your true local city name.
