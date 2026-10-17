@@ -61,6 +61,19 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_4x2_info" />
         </receiver>
+
+        <!-- 4x2 极简时钟天气小组件（无近期预报）广播接收器 -->
+        <receiver
+            android:name=".WeatherWidget4x2CleanProvider"
+            android:label=""
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_4x2_clean_info" />
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

@@ -44,7 +44,8 @@
 
 ### 📱 原生全透明桌面小部件 (Home Widgets)
 - **4×1 单行条形小部件**：实时大时钟、城市名、当前天气状况、温差范围与实时大温度——单行自适应排版，**坚决不换行、不截断、不冒省略号**。
-- **4×2 气象看板大部件**：系统实时走日期（如 `10月17日 周六` / `Oct 17 Sat`）、当前天气、温湿体感与 5 节点逐小时预报（首栏带精准 `现在 / Now`）。
+- **4×2 极简大字看板小部件（新增·纯净版）**：**不带近期预报胶囊**，专为追求极致留白与大字视觉设计。左侧超大时钟、日期与城市；右侧天气大图标、实时大温度与天气描述。
+- **4×2 全功能气象看板小部件**：系统实时走日期（如 `10月17日 周六` / `Oct 17 Sat`）、当前天气、温湿体感与 5 节点逐小时预报（首栏带精准 `现在 / Now`）。
 - **100% 全透明背景**：白字带精细抗模糊阴影，无论浅色天空、暗色壁纸还是繁复的城市夜景，均清晰锐利。
 - **彻底去除应用标签**：桌面小部件彻底抹除多余系统标题与“初晴天气”字样，极简清爽。
 
@@ -119,6 +120,7 @@ flutter build apk --release
 
 ### 📱 Transparent Android Home Screen Widgets
 - **4×1 Compact Ribbon**: Bold clock, localized city name, real-time temperature, condition status, and high/low range—engineered for single-line display with **zero text-wrapping or clipping**.
+- **4×2 Minimalist Clean Widget (New)**: **Without hourly forecast capsules**, dedicated to high readability and elegant negative space. Huge clock, date & city on the left; big icon, huge temperature & weather summary on the right.
 - **4×2 Weather Dashboard**: Real-time clock with synchronized live date display (e.g. `Oct 17 Sat`), weather summary, and a 5-step hourly forecast timeline starting with `Now`.
 - **100% Transparent Background**: Crisp white typography with subtle drop shadows, ensuring legibility across any wallpaper.
 - **Clean Aesthetic**: Completely free of unnecessary application branding or system widget label clutter.

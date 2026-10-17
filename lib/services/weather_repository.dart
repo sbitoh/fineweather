@@ -153,6 +153,11 @@ class WeatherRepository {
         androidName: 'WeatherWidget4x2Provider',
         qualifiedAndroidName: 'com.sbitoh.fineweather.WeatherWidget4x2Provider',
       );
+      await HomeWidget.updateWidget(
+        name: 'WeatherWidget4x2CleanProvider',
+        androidName: 'WeatherWidget4x2CleanProvider',
+        qualifiedAndroidName: 'com.sbitoh.fineweather.WeatherWidget4x2CleanProvider',
+      );
     } catch (_) {}
   }
 

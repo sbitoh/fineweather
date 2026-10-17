@@ -57,7 +57,7 @@ class WidgetPreviewActivity : Activity() {
         view4x1.findViewById<TextView>(R.id.widget_4x1_temp)?.text = temp
         view4x1.findViewById<TextView>(R.id.widget_4x1_icon)?.text = icon
 
-        // 渲染 4x2 小部件
+        // 渲染 4x2 小部件 (带近期逐小时预报)
         val view4x2 = inflater.inflate(R.layout.widget_4x2, root, false)
         view4x2.findViewById<TextView>(R.id.widget_4x2_city)?.text = localizedCity
         view4x2.findViewById<TextView>(R.id.widget_4x2_temp)?.text = temp
@@ -65,6 +65,14 @@ class WidgetPreviewActivity : Activity() {
         view4x2.findViewById<TextView>(R.id.widget_4x2_icon)?.text = icon
         view4x2.findViewById<TextView>(R.id.widget_4x2_date)?.text = localizedDate
         view4x2.findViewById<TextView>(R.id.widget_4x2_now)?.text = localizedNow
+
+        // 渲染 4x2 极简小部件 (不带近期逐小时预报，纯粹大字看板)
+        val view4x2Clean = inflater.inflate(R.layout.widget_4x2_clean, root, false)
+        view4x2Clean.findViewById<TextView>(R.id.widget_4x2_clean_city)?.text = localizedCity
+        view4x2Clean.findViewById<TextView>(R.id.widget_4x2_clean_temp)?.text = temp
+        view4x2Clean.findViewById<TextView>(R.id.widget_4x2_clean_desc)?.text = sub
+        view4x2Clean.findViewById<TextView>(R.id.widget_4x2_clean_icon)?.text = icon
+        view4x2Clean.findViewById<TextView>(R.id.widget_4x2_clean_date)?.text = localizedDate
 
         val container = android.widget.LinearLayout(this).apply {
             orientation = android.widget.LinearLayout.VERTICAL
@@ -76,18 +84,31 @@ class WidgetPreviewActivity : Activity() {
             )
             addView(view4x1, lp4x1)
             
-            val spacer = View(this@WidgetPreviewActivity).apply {
+            val spacer1 = View(this@WidgetPreviewActivity).apply {
                 layoutParams = android.widget.LinearLayout.LayoutParams(
                     android.widget.LinearLayout.LayoutParams.MATCH_PARENT, 20
                 )
             }
-            addView(spacer)
+            addView(spacer1)
             
             val lp4x2 = android.widget.LinearLayout.LayoutParams(
                 android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
             )
             addView(view4x2, lp4x2)
+
+            val spacer2 = View(this@WidgetPreviewActivity).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.MATCH_PARENT, 20
+                )
+            }
+            addView(spacer2)
+
+            val lp4x2Clean = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            addView(view4x2Clean, lp4x2Clean)
         }
 
         root.addView(container)

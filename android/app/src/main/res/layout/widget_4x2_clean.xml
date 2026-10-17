@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_4x2_clean_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <!-- 左侧：超大实时时间与日期、城市 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- 原生大时钟 (纯白带高级阴影) -->
+        <TextClock
+            android:id="@+id/widget_4x2_clean_clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="hh:mm"
+            android:format24Hour="HH:mm"
+            android:singleLine="true"
+            android:textColor="#FFFFFF"
+            android:shadowColor="#80000000"
+            android:shadowDx="2"
+            android:shadowDy="3"
+            android:shadowRadius="5"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+        <!-- 日期与星期 -->
+        <TextView
+            android:id="@+id/widget_4x2_clean_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="10月17日 周六"
+            android:textColor="#F1F5F9"
+            android:shadowColor="#80000000"
+            android:shadowDx="1"
+            android:shadowDy="2"
+            android:shadowRadius="3"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- 城市名 -->
+        <TextView
+            android:id="@+id/widget_4x2_clean_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Taiyuan"
+            android:textColor="#E2E8F0"
+            android:shadowColor="#80000000"
+            android:shadowDx="1"
+            android:shadowDy="2"
+            android:shadowRadius="3"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- 右侧：天气图标、超大实时温度与天气状况描述 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="end|center_vertical"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/widget_4x2_clean_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:text="🌦️"
+                android:textSize="36sp" />
+
+            <TextView
+                android:id="@+id/widget_4x2_clean_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="13°"
+                android:textColor="#FFFFFF"
+                android:shadowColor="#80000000"
+                android:shadowDx="2"
+                android:shadowDy="3"
+                android:shadowRadius="5"
+                android:textSize="46sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 天气状况与温差范围 (如：Showers · 10° / 14°) -->
+        <TextView
+            android:id="@+id/widget_4x2_clean_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Showers · 10° / 14°"
+            android:textColor="#F1F5F9"
+            android:shadowColor="#80000000"
+            android:shadowDx="1"
+            android:shadowDy="2"
+            android:shadowRadius="3"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>
