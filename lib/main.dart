@@ -254,7 +254,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'FineWeather v0.2.1\nAuthor: sbitoh\nLicense: Apache-2.0',
+              'FineWeather v0.2.2\nAuthor: sbitoh\nLicense: Apache-2.0',
               style: TextStyle(color: Colors.white30, fontSize: 11),
             ),
           ],

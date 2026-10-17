@@ -7,10 +7,40 @@ import 'weather_helper.dart';
 class WeatherService {
   static const Duration timeoutDuration = Duration(seconds: 4);
 
-  /// 搜索城市列表（支持中文地名，如 "太原"、"北京"）
+  /// 搜索城市列表（双源并发聚合：Open-Meteo + wttr.in/OSM）
   static Future<List<CityItem>> searchCities(String query) async {
-    final encoded = Uri.encodeComponent(query.trim());
-    final isAscii = query.trim().runes.every((r) => r < 128);
+    final cleanQuery = query.trim();
+    if (cleanQuery.isEmpty) return [];
+
+    final List<CityItem> combinedResults = [];
+    final Set<String> seenCoords = {};
+
+    // 1. 并发请求 Open-Meteo 与 wttr.in / OSM
+    final futures = [
+      _searchFromOpenMeteo(cleanQuery),
+      _searchFromWttrIn(cleanQuery),
+      _searchFromOsm(cleanQuery),
+    ];
+
+    final resultsList = await Future.wait(futures);
+    for (final list in resultsList) {
+      for (final item in list) {
+        // 基于经纬度保留一位小数去重，避免重复城市
+        final key = '${item.latitude.toStringAsFixed(1)}_${item.longitude.toStringAsFixed(1)}';
+        if (!seenCoords.contains(key)) {
+          seenCoords.add(key);
+          combinedResults.add(item);
+        }
+      }
+    }
+
+    return combinedResults;
+  }
+
+  /// 数据源 A：Open-Meteo 地理编码
+  static Future<List<CityItem>> _searchFromOpenMeteo(String query) async {
+    final encoded = Uri.encodeComponent(query);
+    final isAscii = query.runes.every((r) => r < 128);
     final langParam = isAscii ? '' : '&language=zh';
     final url = Uri.parse(
         'https://geocoding-api.open-meteo.com/v1/search?name=$encoded&count=10$langParam&format=json');
@@ -37,6 +67,78 @@ class WeatherService {
             );
           }).toList();
         }
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  /// 数据源 B：wttr.in 智能匹配
+  static Future<List<CityItem>> _searchFromWttrIn(String query) async {
+    try {
+      final encoded = Uri.encodeComponent(query);
+      final url = Uri.parse('https://wttr.in/$encoded?format=j1&lang=zh');
+      final res = await http.get(url).timeout(timeoutDuration);
+      if (res.statusCode == 200) {
+        final data = json.decode(utf8.decode(res.bodyBytes));
+        final nearest = data['nearest_area'] as List?;
+        if (nearest != null && nearest.isNotEmpty) {
+          final first = nearest[0];
+          final lat = double.tryParse(first['latitude'] ?? '');
+          final lon = double.tryParse(first['longitude'] ?? '');
+          if (lat != null && lon != null) {
+            String region = '';
+            if (first['region'] != null && (first['region'] as List).isNotEmpty) {
+              region = first['region'][0]['value'] ?? '';
+            }
+            String country = '';
+            if (first['country'] != null && (first['country'] as List).isNotEmpty) {
+              country = first['country'][0]['value'] ?? '';
+            }
+            final admin = region.isNotEmpty ? '$country $region'.trim() : country;
+            return [
+              CityItem(
+                name: query,
+                latitude: lat,
+                longitude: lon,
+                adminArea: admin,
+              )
+            ];
+          }
+        }
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  /// 数据源 C：OpenStreetMap Nominatim 中文全球地理库
+  static Future<List<CityItem>> _searchFromOsm(String query) async {
+    try {
+      final encoded = Uri.encodeComponent(query);
+      final url = Uri.parse(
+          'https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=5&accept-language=zh-CN,en');
+      final res = await http.get(url, headers: {
+        'User-Agent': 'FineWeather/0.2.1'
+      }).timeout(timeoutDuration);
+
+      if (res.statusCode == 200) {
+        final list = json.decode(utf8.decode(res.bodyBytes)) as List;
+        return list.map((item) {
+          final lat = double.tryParse(item['lat'] ?? '') ?? 0.0;
+          final lon = double.tryParse(item['lon'] ?? '') ?? 0.0;
+          final displayName = (item['display_name'] ?? '') as String;
+          final parts = displayName.split(',').map((s) => s.trim()).toList();
+          String cityName = query;
+          if (parts.isNotEmpty) {
+            cityName = parts[0].replaceAll('市', '').replaceAll('区', '').replaceAll('县', '').trim();
+          }
+          final admin = parts.length > 1 ? parts.sublist(1).take(2).join(' ') : '';
+          return CityItem(
+            name: cityName.isEmpty ? query : cityName,
+            latitude: lat,
+            longitude: lon,
+            adminArea: admin,
+          );
+        }).where((c) => c.latitude != 0.0 && c.longitude != 0.0).toList();
       }
     } catch (_) {}
     return [];
