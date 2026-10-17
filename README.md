@@ -1,24 +1,24 @@
-# FineWeather (初晴天气)
+# 初晴天气 (FineWeather)
 
 <p align="center">
-  <img src="assets/images/app_preview.png" width="320" alt="FineWeather Main Screen" />
+  <img src="assets/images/app_preview.png" width="320" alt="初晴天气主界面 (Main App)" />
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/images/widget_preview.png" width="320" alt="Transparent Home Widgets" />
+  <img src="assets/images/widget_preview.png" width="320" alt="透明桌面小部件 (Home Widgets)" />
 </p>
 
 <p align="center">
-  <b>A pure, elegant, ad-free, and lightweight modern weather app with fully transparent home widgets for Android, built with Flutter.</b>
+  <b>一款开源、纯净、优雅、极度轻量的现代化 Android / Flutter 天气应用与桌面微组件</b>
   <br />
-  <i>Zero Ads · Zero Tracking · Dual-Source Silent Failover (Open-Meteo & wttr.in) · Glassmorphic Design</i>
+  <i>零广告 · 零开屏 · 零隐私追踪 · 全球双源气象冗余容灾 · 全透明桌面小部件</i>
 </p>
 
 <p align="center">
-  <a href="#-highlights--features">Features</a> •
-  <a href="#-screenshots">Screenshots</a> •
-  <a href="#-installation">Installation</a> •
-  <a href="#-build-from-source">Build</a> •
-  <a href="#-license">License</a> •
-  <a href="#-中文说明">中文说明</a>
+  <a href="#-核心特性">核心特性</a> •
+  <a href="#-界面预览">界面预览</a> •
+  <a href="#-快速下载与安装">下载安装</a> •
+  <a href="#-源码构建与开发">本地构建</a> •
+  <a href="#-english-documentation">English Docs</a> •
+  <a href="#-开源协议-license">开源协议</a>
 </p>
 
 <p align="center">
@@ -30,26 +30,101 @@
 
 ---
 
+## 🌟 核心特性
+
+### 🛡️ 极致纯粹，零商业侵扰
+- **零商业广告**：没有开屏广告、没有信息流软文、没有牛皮癣弹窗。
+- **无垃圾资讯**：剔除低俗新闻与无效推送，让天气回归纯粹看天气的本质。
+- **隐私保护**：无第三方商业统计 SDK，地理位置与偏好设置全本地化存储。
+
+### 🌐 全球双源免 Key 静默容灾 (Dual Redundancy)
+- **主数据源**：**Open-Meteo** 全球高精度气象模型（严遵 WMO 世界气象组织规范）。
+- **备用数据源**：**wttr.in** 全球开放气象接口。
+- **自动故障转移**：主源遇网络波动或超时自动无缝切换备用源，客户端直连开箱即用，无需自建反代或申请商业 Key。
+
+### 📱 原生全透明桌面小部件 (Home Widgets)
+- **4×1 单行条形小部件**：实时大时钟、城市名、当前天气状况、温差范围与实时大温度——单行自适应排版，**坚决不换行、不截断、不冒省略号**。
+- **4×2 气象看板大部件**：系统实时走日期（如 `10月17日 周六` / `Oct 17 Sat`）、当前天气、温湿体感与 5 节点逐小时预报（首栏带精准 `现在 / Now`）。
+- **100% 全透明背景**：白字带精细抗模糊阴影，无论浅色天空、暗色壁纸还是繁复的城市夜景，均清晰锐利。
+- **彻底去除应用标签**：桌面小部件彻底抹除多余系统标题与“初晴天气”字样，极简清爽。
+
+### 🧊 莫兰迪清透冰川蓝视觉
+- 优雅通透的清润灰蓝莫兰迪基调，搭配毛玻璃卡片（Glassmorphism），视觉轻盈护眼。
+
+### 🌍 中英双语与桌面联动 (i18n)
+- 应用内支持 **简体中文** 与 **English** 一键热切换。
+- 天气状态描述、星期与日期、生活指标（微风拂面、体感舒适等）与桌面小部件秒级全局联动。
+
+### 📍 本地高精度 GPS 逆地理识别
+- GPS 结合 OpenStreetMap 与 BigDataCloud 双通道高精度逆地理编码，精准解析本地真实城市名称。
+
+---
+
+## 📸 界面预览
+
+| 应用主界面 (Main App) | 桌面全透明小部件 (Home Widgets) |
+| :---: | :---: |
+| <img src="assets/images/app_preview.png" width="340" alt="Main UI" /> | <img src="assets/images/widget_preview.png" width="340" alt="Widgets UI" /> |
+
+---
+
+## 🚀 快速下载与安装
+
+前往 GitHub [Releases](https://github.com/sbitoh/fineweather/releases) 页面下载最新 APK：
+- **最新版本**：`v0.2.1`
+- **支持架构**：`arm64-v8a`, `armeabi-v7a`, `x86_64`
+
+---
+
+## 🛠️ 源码构建与开发
+
+### 环境要求
+- Flutter SDK `>=3.3.0`
+- Android SDK (API 34/35, JDK 17)
+
+### 构建命令
+```bash
+# 1. 克隆仓库
+git clone https://github.com/sbitoh/fineweather.git
+cd fineweather
+
+# 2. 安装依赖
+flutter pub get
+
+# 3. 运行调试
+flutter run
+
+# 4. 构建发布版 APK
+flutter build apk --release
+```
+编译产物位于 `build/app/outputs/flutter-apk/app-release.apk`。
+
+---
+
+<br />
+
+# 🌐 English Documentation
+
 ## 🌟 Highlights & Features
 
 ### 🛡️ 100% Pure & Distraction-Free
-- **Zero Commercial Ads**: No startup splash ads, no banner popups, and no sponsored promotions.
+- **Zero Commercial Ads**: No splash ads, no banner popups, and no sponsored content.
 - **No Newsfeeds or Spam**: Stripped of useless clickbait articles and redundant push notifications.
 - **Privacy-Respecting**: No third-party tracking SDKs; location and weather data stay strictly local.
 
 ### 🌐 Dual Meteorological Sources with Zero-Config Failover
-- **Primary Source**: [Open-Meteo](https://open-meteo.com/) high-resolution global weather models (conforming to WMO standards).
+- **Primary Source**: [Open-Meteo](https://open-meteo.com/) high-resolution global weather models (WMO standards).
 - **Secondary Source**: [wttr.in](https://wttr.in/) open weather API.
-- **Automatic Silent Failover**: If the primary source is temporarily unreachable or times out, the app immediately switches to the backup source without requiring custom API keys or private proxy setups.
+- **Automatic Silent Failover**: Seamlessly fails over to wttr.in if Open-Meteo is temporarily unreachable.
 
 ### 📱 Transparent Android Home Screen Widgets
-- **4×1 Compact Ribbon Widget**: Large bold clock, localized city name, real-time temperature, condition status, and high/low range—engineered for single-line display with **zero text-wrapping or clipping**.
-- **4×2 Weather Dashboard Widget**: Real-time clock with synchronized live date display (e.g. `Oct 17 Sat` / `10月17日 周六`), weather summary, and a 5-step hourly forecast timeline starting with `Now`.
-- **100% Transparent Background**: Crisp white typography with delicate drop shadows, ensuring flawless legibility across light, dark, or busy wallpapers.
+- **4×1 Compact Ribbon**: Bold clock, localized city name, real-time temperature, condition status, and high/low range—engineered for single-line display with **zero text-wrapping or clipping**.
+- **4×2 Weather Dashboard**: Real-time clock with synchronized live date display (e.g. `Oct 17 Sat`), weather summary, and a 5-step hourly forecast timeline starting with `Now`.
+- **100% Transparent Background**: Crisp white typography with subtle drop shadows, ensuring legibility across any wallpaper.
 - **Clean Aesthetic**: Completely free of unnecessary application branding or system widget label clutter.
 
 ### 🧊 Glacial Glassmorphism Aesthetics
-- Elegant Morandi cool-blue palette paired with soft glassmorphism cards and balanced whitespace for comfortable, strain-free viewing.
+- Elegant Morandi cool-blue palette paired with soft glassmorphic cards and balanced whitespace for comfortable, strain-free viewing.
 
 ### 🌍 Seamless Bilingual Support (i18n)
 - One-tap instant toggle between **English** and **Simplified Chinese (简体中文)**.
@@ -60,71 +135,8 @@
 
 ---
 
-## 📸 Screenshots
+## 📄 开源协议 (License)
 
-| In-App Weather View | Transparent Home Widgets |
-| :---: | :---: |
-| <img src="assets/images/app_preview.png" width="340" alt="Main UI" /> | <img src="assets/images/widget_preview.png" width="340" alt="Widgets UI" /> |
+本项目基于 [Apache License 2.0](LICENSE) 协议开源。
 
----
-
-## 🚀 Installation
-
-Download the latest APK release from the [Releases](https://github.com/sbitoh/fineweather/releases) page:
-- **Latest Version**: `v0.2.1`
-- **Supported ABIs**: `arm64-v8a`, `armeabi-v7a`, `x86_64`
-
----
-
-## 🛠️ Build from Source
-
-### Prerequisites
-- Flutter SDK `>=3.3.0`
-- Android SDK (API 34/35, JDK 17)
-
-### Steps
-```bash
-# 1. Clone repository
-git clone https://github.com/sbitoh/fineweather.git
-cd fineweather
-
-# 2. Get dependencies
-flutter pub get
-
-# 3. Run debug build
-flutter run
-
-# 4. Build release APK
-flutter build apk --release
-```
-Compiled APK path: `build/app/outputs/flutter-apk/app-release.apk`.
-
----
-
-<br />
-
-# 🇨🇳 中文说明
-
-## 🌟 核心特性
-
-- 🛡️ **极致纯粹，零商业侵扰**：没有开屏广告，没有资讯信息流与弹窗推送，还原天气本身应有的安宁。
-- 🌐 **双气象源免 Key 静默容灾**：
-  - 主源：**Open-Meteo** 全球高精度气象网（WMO 规范）。
-  - 备用源：**wttr.in** 开放气象接口。
-  - 主备源自动故障转移（Failover），客户端直连开箱即用。
-- 📱 **原生全透明桌面小部件 (Home Widgets)**：
-  - **4×1 单行条形小部件**：时间、城市、天气、温度与温差范围自适应排版，不挤压折行。
-  - **4×2 气象看板大部件**：系统实时走日期、天气看板与 5 节点逐小时预报。
-  - **100% 全透明背景**：白字带精细阴影，无论浅色天空还是暗色夜景壁纸均能清晰呈现。
-  - **彻底去除应用标签**：桌面小部件彻底抹除多余系统标题，极简清爽。
-- 🧊 **莫兰迪清透冰川蓝视觉**：毛玻璃卡片（Glassmorphism），视觉舒适护眼。
-- 🌍 **双语与本地化联动 (i18n)**：简体中文与 English 一键热切换，应用内与桌面组件实时同步。
-- 📍 **本地 GPS 逆地理识别**：精准解析本地真实城市名称。
-
----
-
-## 📄 License
-
-This project is licensed under the [Apache License 2.0](LICENSE).
-
-Developed with precision by **sbitoh**.
+开发者：**sbitoh**
