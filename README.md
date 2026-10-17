@@ -71,7 +71,10 @@
 
 ## 🚀 快速下载与安装
 
-前往 GitHub [Releases](https://github.com/sbitoh/fineweather/releases) 页面下载最新 APK：
+- 📦 **国内网盘分流（百度网盘·不限速微盘/App一键下载）**：
+  - 链接：[点击前往百度网盘下载](https://pan.baidu.com/s/10nvUKmbt84NZleo5FtiHnQ?pwd=mzaj)
+  - 提取码：`mzaj`
+- 🌐 **GitHub 官方渠道**：前往 [Releases](https://github.com/sbitoh/fineweather/releases) 页面下载最新 APK
 - **最新版本**：`v0.2.1`
 - **支持架构**：`arm64-v8a`, `armeabi-v7a`, `x86_64`
 
