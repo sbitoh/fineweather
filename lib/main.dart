@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'models/weather_data.dart';
+import 'services/weather_helper.dart';
 import 'services/weather_repository.dart';
 import 'services/location_service.dart';
 import 'services/i18n.dart';
@@ -9,7 +12,16 @@ import 'views/city_manager_sheet.dart';
 import 'widgets/glass_card.dart';
 import 'widgets/weather_visual.dart';
 
+class CustomHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() {
+  HttpOverrides.global = CustomHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -51,12 +63,15 @@ class _FineWeatherAppState extends State<FineWeatherApp> {
         fontFamily: 'sans-serif',
       ),
       home: WeatherHomeScreen(
+        currentLang: I18n.lang,
         onLanguageChanged: (newLang) async {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('app_lang', newLang);
           setState(() {
             I18n.lang = newLang;
           });
+          // 语言切换后立即刷新当前小部件数据，显式传入 newLang
+          await WeatherRepository.updateWidgetData(lang: newLang);
         },
       ),
     );
@@ -64,9 +79,14 @@ class _FineWeatherAppState extends State<FineWeatherApp> {
 }
 
 class WeatherHomeScreen extends StatefulWidget {
+  final String currentLang;
   final Function(String) onLanguageChanged;
 
-  const WeatherHomeScreen({super.key, required this.onLanguageChanged});
+  const WeatherHomeScreen({
+    super.key,
+    required this.currentLang,
+    required this.onLanguageChanged,
+  });
 
   @override
   State<WeatherHomeScreen> createState() => _WeatherHomeScreenState();
@@ -103,7 +123,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = '${I18n.locateFailed}: $e';
+        _errorMessage = '$e';
         _isLoading = false;
       });
     }
@@ -114,7 +134,11 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
     if (locCity != null && mounted) {
       setState(() {
         // 将定位城市更新或置于首位
-        final index = _cities.indexWhere((c) => c.adminArea.contains('定位') || c.name == locCity.name);
+        final index = _cities.indexWhere((c) =>
+            c.adminArea.contains('定位') ||
+            c.adminArea.contains('Location') ||
+            c.adminArea.contains('Located') ||
+            c.name == locCity.name);
         if (index >= 0) {
           _cities[index] = locCity;
         } else {
@@ -123,6 +147,10 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
         _currentCityIndex = 0;
       });
       await WeatherRepository.saveCities(_cities);
+      // 保证立刻同步定位城市名给桌面小部件
+      final curCity = _cities[0];
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('widget_city', I18n.isEn ? WeatherRepository.toEnglishCityName(curCity.name) : curCity.name);
       _fetchWeatherForCurrentCity();
     }
   }
@@ -143,6 +171,8 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
         _weatherData = data;
         _isLoading = false;
       });
+      // 每次主界面获取完天气，强制把最新数据同步给小组件并唤起原生刷新
+      await WeatherRepository.syncWidgetData(data);
     } catch (e) {
       setState(() {
         _errorMessage = '${I18n.locateFailed}\n$e';
@@ -197,6 +227,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                     if (val) {
                       widget.onLanguageChanged('zh');
                       Navigator.pop(context);
+                      _fetchWeatherForCurrentCity(forceRefresh: true);
                     }
                   },
                 ),
@@ -208,6 +239,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                     if (val) {
                       widget.onLanguageChanged('en');
                       Navigator.pop(context);
+                      _fetchWeatherForCurrentCity(forceRefresh: true);
                     }
                   },
                 ),
@@ -222,7 +254,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'FineWeather v1.1.0\nAuthor: Junye (sbitoh)\nLicense: Apache-2.0',
+              'FineWeather v0.2.1\nAuthor: sbitoh\nLicense: Apache-2.0',
               style: TextStyle(color: Colors.white30, fontSize: 11),
             ),
           ],
@@ -230,7 +262,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('关闭', style: TextStyle(color: Colors.lightBlueAccent)),
+            child: Text(I18n.close, style: const TextStyle(color: Colors.lightBlueAccent)),
           ),
         ],
       ),
@@ -314,11 +346,14 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
 
   Widget _buildTopNav() {
     final cityName = _cities.isNotEmpty
-        ? _cities[_currentCityIndex].name
+        ? I18n.getLocalizedCityName(_cities[_currentCityIndex].name)
         : I18n.locating;
-    final isLoc = _cities.isNotEmpty && _cities[_currentCityIndex].adminArea.contains('定位');
+    final isLoc = _cities.isNotEmpty &&
+        (_cities[_currentCityIndex].adminArea.contains('定位') ||
+         _cities[_currentCityIndex].adminArea.contains('Location') ||
+         _cities[_currentCityIndex].adminArea.contains('Located'));
     final adminArea = _cities.isNotEmpty
-        ? _cities[_currentCityIndex].adminArea
+        ? I18n.getLocalizedAdminArea(_cities[_currentCityIndex].adminArea)
         : '';
 
     return Padding(
@@ -420,7 +455,7 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '$emoji ${data.weatherText}',
+                '$emoji ${WeatherHelper.getWeatherDescription(data.weatherCode, isEn: I18n.isEn)}',
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
@@ -490,11 +525,12 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
               itemBuilder: (context, index) {
                 final item = hourly[index];
                 final icon = WeatherVisual.getIconEmoji(item.weatherCode);
+                final timeDisplay = (index == 0 && item.time != '00:00') ? I18n.now : item.time;
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      item.time,
+                      timeDisplay,
                       style: const TextStyle(
                           color: Colors.white70, fontSize: 12),
                     ),
@@ -552,45 +588,82 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
             itemBuilder: (context, index) {
               final d = daily[index];
               final icon = WeatherVisual.getIconEmoji(d.weatherCode);
-              return Row(
-                children: [
-                  SizedBox(
-                    width: 75,
-                    child: Text(
-                      d.date,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: 14),
+    final enWeekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final zhWeekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+    final isEn = I18n.isEn;
+    final dayLabel = isEn
+        ? (index == 0
+            ? 'Today'
+            : index == 1
+                ? 'Tomorrow'
+                : enWeekdays[(d.weekday - 1).clamp(0, 6)])
+        : (index == 0
+            ? '今天'
+            : index == 1
+                ? '明天'
+                : zhWeekdays[(d.weekday - 1).clamp(0, 6)]);
+    // 提取真实日期数字（如 10/17 或从 d.date 里的 '10/18' 提取）
+    String mDay = d.monthDay;
+    if (mDay.isEmpty) {
+      final reg = RegExp(r'\d{1,2}/\d{1,2}');
+      final match = reg.firstMatch(d.date);
+      if (match != null) {
+        mDay = match.group(0)!;
+      } else {
+        // 如果没有，直接按当前时间递推
+        final targetDate = DateTime.now().add(Duration(days: index));
+        mDay = '${targetDate.month.toString().padLeft(2, '0')}/${targetDate.day.toString().padLeft(2, '0')}';
+      }
+    }
+    final displayDate = '$dayLabel $mDay';
+    final descText = WeatherHelper.getWeatherDescription(d.weatherCode, isEn: isEn);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: isEn ? 102 : 78,
+                      child: Text(
+                        displayDate,
+                        maxLines: 1,
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 13),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 90,
-                    child: Row(
-                      children: [
-                        Text(icon, style: const TextStyle(fontSize: 18)),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            d.weatherText,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 13),
+                    Expanded(
+                      flex: 4,
+                      child: Row(
+                        children: [
+                          Text(icon, style: const TextStyle(fontSize: 16)),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              descText,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 12),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Text(
-                          '${d.tempMin.round()}°',
-                          style: const TextStyle(
-                              color: Colors.white70, fontSize: 13),
-                        ),
-                        Expanded(
-                          child: Container(
+                    const SizedBox(width: 4),
+                    Expanded(
+                      flex: 3,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${d.tempMin.round()}°',
+                            style: const TextStyle(
+                                color: Colors.white70, fontSize: 13),
+                          ),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: 28,
                             height: 4,
-                            margin: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(2),
                               gradient: const LinearGradient(
@@ -601,19 +674,20 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
                               ),
                             ),
                           ),
-                        ),
-                        Text(
-                          '${d.tempMax.round()}°',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
+                          const SizedBox(width: 4),
+                          Text(
+                            '${d.tempMax.round()}°',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           ),
@@ -633,10 +707,10 @@ class _WeatherHomeScreenState extends State<WeatherHomeScreen> {
       crossAxisSpacing: 12,
       childAspectRatio: 1.5,
       children: [
-        _buildBentoItem('💧 ${I18n.humidity}', '${data.relativeHumidity}%', '体感舒适'),
-        _buildBentoItem('💨 ${I18n.wind}', '${data.windSpeed.round()} km/h', '微风拂面'),
-        _buildBentoItem('☀️ ${I18n.uvIndex}', '1', '无需特别防护'),
-        _buildBentoItem('👁️ ${I18n.visibility}', '10 km', '视线开阔清晰'),
+        _buildBentoItem('💧 ${I18n.humidity}', '${data.relativeHumidity}%', I18n.comfortable),
+        _buildBentoItem('💨 ${I18n.wind}', '${data.windSpeed.round()} km/h', I18n.gentleBreeze),
+        _buildBentoItem('☀️ ${I18n.uvIndex}', '1', I18n.uvLow),
+        _buildBentoItem('👁️ ${I18n.visibility}', '10 km', I18n.clearView),
       ],
     );
   }

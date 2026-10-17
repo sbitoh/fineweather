@@ -115,7 +115,7 @@ class _CityManagerSheetState extends State<CityManagerSheet> {
             itemBuilder: (context, index) {
               final c = _cities[index];
               final isCurrent = index == widget.selectedIndex;
-              final isLoc = index == 0 && c.adminArea.contains('定位');
+              final isLoc = index == 0 && (c.adminArea.contains('定位') || c.adminArea.contains('Location') || c.adminArea.contains('Located'));
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
@@ -137,7 +137,7 @@ class _CityManagerSheetState extends State<CityManagerSheet> {
                   title: Row(
                     children: [
                       Text(
-                        c.name,
+                        I18n.getLocalizedCityName(c.name),
                         style: TextStyle(
                           color: isCurrent ? Colors.lightBlueAccent : Colors.white,
                           fontWeight:
@@ -161,7 +161,7 @@ class _CityManagerSheetState extends State<CityManagerSheet> {
                     ],
                   ),
                   subtitle: Text(
-                    c.adminArea,
+                    I18n.getLocalizedAdminArea(c.adminArea),
                     style: const TextStyle(color: Colors.white54, fontSize: 12),
                   ),
                   trailing: IconButton(

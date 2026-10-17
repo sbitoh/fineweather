@@ -31,9 +31,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".WidgetPreviewActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.NoTitleBar" />
+
         <!-- 4x1 桌面小组件广播接收器 -->
         <receiver
             android:name=".WeatherWidget4x1Provider"
+            android:label=""
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -46,6 +52,7 @@
         <!-- 4x2 桌面小组件广播接收器 -->
         <receiver
             android:name=".WeatherWidget4x2Provider"
+            android:label=""
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

@@ -1,6 +1,66 @@
 class WeatherHelper {
-  /// WMO 天气代码转换为中文描述
-  static String getWeatherDescription(int code) {
+  /// WMO 天气代码转换为多语言描述
+  static String getWeatherDescription(int code, {bool isEn = false}) {
+    if (isEn) {
+      switch (code) {
+        case 0:
+          return 'Clear Sky';
+        case 1:
+          return 'Mainly Clear';
+        case 2:
+          return 'Partly Cloudy';
+        case 3:
+          return 'Overcast';
+        case 45:
+          return 'Fog';
+        case 48:
+          return 'Depositing Rime Fog';
+        case 51:
+          return 'Light Drizzle';
+        case 53:
+          return 'Moderate Drizzle';
+        case 55:
+          return 'Dense Drizzle';
+        case 56:
+        case 57:
+          return 'Freezing Drizzle';
+        case 61:
+          return 'Slight Rain';
+        case 63:
+          return 'Moderate Rain';
+        case 65:
+          return 'Heavy Rain';
+        case 66:
+        case 67:
+          return 'Freezing Rain';
+        case 71:
+          return 'Slight Snow';
+        case 73:
+          return 'Moderate Snow';
+        case 75:
+          return 'Heavy Snow';
+        case 77:
+          return 'Snow Grains';
+        case 80:
+          return 'Rain';
+        case 81:
+          return 'Showers';
+        case 82:
+          return 'Violent';
+        case 85:
+          return 'Slight Snow Showers';
+        case 86:
+          return 'Heavy Snow Showers';
+        case 95:
+          return 'Thunderstorm';
+        case 96:
+        case 99:
+          return 'Thunderstorm with Hail';
+        default:
+          return 'Partly Cloudy';
+      }
+    }
+
     switch (code) {
       case 0:
         return '晴朗';

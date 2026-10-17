@@ -46,3 +46,10 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Build and report artifacts
+*.apk
+*.pdf
+*.html
+screenshots/
+

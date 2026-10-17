@@ -10,8 +10,10 @@ class WeatherService {
   /// 搜索城市列表（支持中文地名，如 "太原"、"北京"）
   static Future<List<CityItem>> searchCities(String query) async {
     final encoded = Uri.encodeComponent(query.trim());
+    final isAscii = query.trim().runes.every((r) => r < 128);
+    final langParam = isAscii ? '' : '&language=zh';
     final url = Uri.parse(
-        'https://geocoding-api.open-meteo.com/v1/search?name=$encoded&count=10&language=zh&format=json');
+        'https://geocoding-api.open-meteo.com/v1/search?name=$encoded&count=10$langParam&format=json');
 
     try {
       final res = await http.get(url).timeout(timeoutDuration);
@@ -118,6 +120,8 @@ class WeatherService {
 
       dailyList.add(DailyForecast(
         date: '$dayName $monthDay',
+        weekday: dateObj.weekday,
+        monthDay: monthDay,
         tempMax: (dMax[i] as num).toDouble(),
         tempMin: (dMin[i] as num).toDouble(),
         weatherCode: c,
@@ -202,8 +206,10 @@ class WeatherService {
 
       dailyList.add(DailyForecast(
         date: '$dayName $monthDay',
-        tempMax: double.tryParse(item['maxtempC']) ?? todayMax,
-        tempMin: double.tryParse(item['mintempC']) ?? todayMin,
+        weekday: dateObj.weekday,
+        monthDay: monthDay,
+        tempMax: double.tryParse(item['maxtempC']) ?? 20.0,
+        tempMin: double.tryParse(item['mintempC']) ?? 10.0,
         weatherCode: c,
         weatherText: WeatherHelper.getWeatherDescription(c),
       ));

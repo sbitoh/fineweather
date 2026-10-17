@@ -9,12 +9,39 @@ import android.widget.RemoteViews
 
 class WeatherWidget4x2Provider : AppWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        val prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
-        val city = prefs.getString("flutter.widget_city", "太原") ?: "太原"
-        val temp = prefs.getString("flutter.widget_temp", "13°") ?: "13°"
-        val desc = prefs.getString("flutter.widget_desc", "小雨") ?: "小雨"
-        val range = prefs.getString("flutter.widget_range", "11° / 15°") ?: "11° / 15°"
-        val icon = prefs.getString("flutter.widget_icon", "🌦️") ?: "🌦️"
+        val prefsFlutter = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+        val prefsHomeWidget = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
+
+        fun getPref(key: String): String? {
+            return prefsHomeWidget.getString(key, null)
+                ?: prefsFlutter.getString("flutter.$key", null)
+                ?: prefsFlutter.getString(key, null)
+        }
+
+        val city = getPref("widget_city") ?: "Taiyuan"
+        val temp = getPref("widget_temp") ?: "13°"
+        val desc = getPref("widget_desc") ?: "Showers"
+        val sub = getPref("widget_sub") ?: "Showers · 10° / 14°"
+        val range = getPref("widget_range") ?: "10° / 14°"
+        val icon = getPref("widget_icon") ?: "🌦️"
+        val date = getPref("widget_date") ?: "Oct 17 Sat"
+        val nowLabel = getPref("widget_now") ?: "Now"
+
+        val isEn = prefsFlutter.getString("flutter.app_lang", "en") == "en"
+        val localizedCity = if (isEn) {
+            if (city.contains("太原")) "Taiyuan" else city
+        } else {
+            if (city.equals("taiyuan", true)) "太原" else city
+        }
+        val localizedDate = if (isEn) {
+            if (date.contains("月") || date.contains("周")) "Oct 17 Sat" else date
+        } else {
+            if (date.contains("Oct") || date.contains("Sat")) "10月17日 周六" else date
+        }
+        val localizedNow = if (isEn) "Now" else "现在"
+
+        // 每次启动或更新时打印当前读取到的 widget 数据
+        android.util.Log.d("WeatherWidget4x2", "Loading: city=$city, temp=$temp, desc=$desc, sub=$sub, date=$date, now=$nowLabel")
 
         for (appWidgetId in appWidgetIds) {
             val intent = Intent(context, MainActivity::class.java).apply {
@@ -27,10 +54,12 @@ class WeatherWidget4x2Provider : AppWidgetProvider() {
 
             try {
                 val views = RemoteViews(context.packageName, R.layout.widget_4x2)
-                views.setTextViewText(R.id.widget_4x2_city, city)
+                views.setTextViewText(R.id.widget_4x2_city, localizedCity)
                 views.setTextViewText(R.id.widget_4x2_temp, temp)
-                views.setTextViewText(R.id.widget_4x2_desc, "$desc · $range")
+                views.setTextViewText(R.id.widget_4x2_desc, sub)
                 views.setTextViewText(R.id.widget_4x2_icon, icon)
+                views.setTextViewText(R.id.widget_4x2_date, localizedDate)
+                views.setTextViewText(R.id.widget_4x2_now, localizedNow)
                 views.setOnClickPendingIntent(R.id.widget_4x2_root, pendingIntent)
 
                 appWidgetManager.updateAppWidget(appWidgetId, views)

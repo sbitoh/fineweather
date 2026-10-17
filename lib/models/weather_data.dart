@@ -104,6 +104,8 @@ class DailyForecast {
   final double tempMin;
   final int weatherCode;
   final String weatherText;
+  final int weekday;
+  final String monthDay;
 
   DailyForecast({
     required this.date,
@@ -111,6 +113,8 @@ class DailyForecast {
     required this.tempMin,
     required this.weatherCode,
     required this.weatherText,
+    this.weekday = 1,
+    this.monthDay = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -127,6 +131,8 @@ class DailyForecast {
         tempMin: (json['tempMin'] as num).toDouble(),
         weatherCode: (json['weatherCode'] as num).toInt(),
         weatherText: json['weatherText'] ?? '',
+        weekday: json['weekday'] ?? 1,
+        monthDay: json['monthDay'] ?? '',
       );
 }
 
